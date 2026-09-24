@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Kitchen Test</title>
+<style>
+:root{--bg:#fff8ef;--card:#fff;--ink:#2b2118;--muted:#7a6b5c;--accent:#ff7a45;--accent2:#ffb347;--green:#62b36b;--shadow:0 12px 35px rgba(75,45,20,.12)}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top,#fffdf9 0,#fff8ef 55%,#f8ead9 100%);color:var(--ink);min-height:100vh}
+.app{max-width:1100px;margin:auto;padding:22px 16px 42px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:12px}.logo{font-size:42px;filter:drop-shadow(0 5px 5px #d8b79b)}h1{font-size:clamp(25px,5vw,40px);margin:0;letter-spacing:-1px}.tag{color:var(--muted);font-size:14px}.pill{background:#fff;border:1px solid #ead8c5;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:700}
+.layout{display:grid;grid-template-columns:1fr 1.15fr;gap:16px}.panel{background:rgba(255,255,255,.88);border:1px solid #eadccf;border-radius:24px;box-shadow:var(--shadow);padding:18px}
+h2{font-size:18px;margin:0 0 12px}.sub{font-size:13px;color:var(--muted);margin:-5px 0 14px}
+.ingredients{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.ingredient{border:1px solid #eadccf;background:#fffaf4;border-radius:17px;padding:10px 5px;text-align:center;cursor:pointer;transition:.18s;user-select:none}.ingredient:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(90,50,20,.1)}.ingredient.selected{border-color:var(--accent);background:#fff0e8;transform:translateY(-2px)}.emoji{font-size:30px;display:block}.iname{font-size:11px;font-weight:700}
+.actions{display:flex;gap:9px;margin-top:14px}.btn{border:0;border-radius:15px;padding:12px 15px;font-weight:800;cursor:pointer;font-size:14px}.cook{background:var(--accent);color:#fff;flex:1;box-shadow:0 8px 18px rgba(255,122,69,.25)}.clear{background:#f2e8dd;color:#5f5145}.btn:active{transform:scale(.98)}
+.pan{min-height:255px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:linear-gradient(180deg,#fff9f1,#f7e9d9);border-radius:20px}.pan-emoji{font-size:110px;transition:.3s;filter:drop-shadow(0 12px 7px rgba(0,0,0,.15))}.pan.cooking .pan-emoji{animation:shake .35s infinite alternate}.steam{position:absolute;font-size:28px;opacity:0}.pan.cooking .steam{animation:steam 1.3s infinite}.s1{left:35%;top:23%}.s2{left:51%;top:16%;animation-delay:.4s!important}.s3{left:63%;top:25%;animation-delay:.8s!important}@keyframes shake{from{transform:rotate(-4deg) translateY(2px)}to{transform:rotate(4deg) translateY(-5px)}}@keyframes steam{0%{opacity:0;transform:translateY(15px) scale(.8)}50%{opacity:.7}100%{opacity:0;transform:translateY(-45px) scale(1.2)}}
+.testline{text-align:center;margin:12px 0;color:var(--muted);font-size:13px;min-height:20px}.result{margin-top:12px;border-radius:18px;background:#fffaf4;border:1px solid #eadccf;padding:15px;display:none}.result.show{display:block;animation:pop .35s}@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}.result-title{font-size:20px;font-weight:900}.meta{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.meta span{background:#f4e9dc;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:700}.comment{font-size:14px;line-height:1.5;background:#fff;border-radius:13px;padding:10px 12px;border-left:4px solid var(--accent)}
+.history{margin-top:16px}.discoveries{display:flex;flex-wrap:wrap;gap:7px}.chip{background:#f7eee5;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:700}.empty{color:var(--muted);font-size:13px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.ingredients{grid-template-columns:repeat(4,1fr)}.pan{min-height:210px}.pan-emoji{font-size:88px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="logo">🧪🍳</div><div><h1>AI Kitchen Test</h1><div class="tag">Sandbox dapur: bahan lo, eksperimen kita.</div></div></div>
+    <div class="pill">🇮🇩 Nusantara Lab</div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <h2>🥕 Pilih bahan</h2>
+      <div class="sub">Tap bahan yang ada di dapur. Bebas—nggak harus masuk akal. 😂</div>
+      <div id="ingredients" class="ingredients"></div>
+      <div class="actions"><button class="btn cook" onclick="cook()">🔥 TES DAPUR</button><button class="btn clear" onclick="clearAll()">↺ Reset</button></div>
+      <div class="history"><h2>📖 Penemuan</h2><div id="discoveries" class="discoveries"><span class="empty">Belum ada penemuan. Masak sesuatu dulu.</span></div></div>
+    </section>
+
+    <section class="panel">
+      <h2>👨‍🍳 AI Chef Lab</h2>
+      <div id="testline" class="testline">Menunggu bahan...</div>
+      <div id="pan" class="pan"><div class="steam s1">♨️</div><div class="steam s2">♨️</div><div class="steam s3">♨️</div><div id="panEmoji" class="pan-emoji">🍳</div></div>
+      <div id="result" class="result"></div>
+    </section>
+  </main>
+</div>
+<script>
+const ingredients=[
+  ["🥚","Telur"],["🍚","Nasi"],["🍜","Mie"],["🫘","Tempe"],["🌶️","Cabai"],["🧄","Bawang"],["🥥","Santan"],["🥬","Sawi"],["🍌","Pisang"],["🐟","Ikan"],["🥔","Kentang"],["🍅","Tomat"],["🥜","Kacang"],["🍗","Ayam"],["🫚","Jahe"],["🌿","Serai"]
+];
+const selected=new Set(), discoveries=new Set();
+const el=document.getElementById("ingredients");
+ingredients.forEach(([emoji,name],i)=>{
+ const b=document.createElement("button"); b.className="ingredient"; b.innerHTML='<span class="emoji">'+emoji+'</span><span class="iname">'+name+'</span>';
+ b.onclick=()=>{selected.has(name)?selected.delete(name):selected.add(name);b.classList.toggle("selected")}; el.appendChild(b);
+});
+function clearAll(){selected.clear();document.querySelectorAll(".ingredient").forEach(x=>x.classList.remove("selected"));document.getElementById("result").classList.remove("show");document.getElementById("testline").textContent="Menunggu bahan...";document.getElementById("panEmoji").textContent="🍳"}
+function cook(){
+ const arr=[...selected]; if(!arr.length){document.getElementById("testline").textContent="🤔 Pilih minimal satu bahan dulu, Chef.";return}
+ const pan=document.getElementById("pan"), line=document.getElementById("testline"), result=document.getElementById("result");
+ pan.classList.add("cooking"); result.classList.remove("show"); line.textContent="🧠 AI Chef sedang membaca isi dapur...";
+ setTimeout(()=>{line.textContent="🧪 Menguji kombinasi bahan...";},650);
+ setTimeout(()=>{pan.classList.remove("cooking"); const r=judge(arr); renderResult(r); line.textContent="✨ Eksperimen selesai.";},1450);
+}
+function judge(a){
+ const s=new Set(a), n=a.length; let title="Eksperimen Dapur #"+(discoveries.size+1), emoji="🍲", score=Math.min(96,58+n*6), vibe="🧪 Eksperimental", comment="";
+ if(s.has("Nasi")&&s.has("Telur")){title="Nasi Goreng Eksperimen";emoji="🍳";score+=8;vibe="😋 Familiar";comment="Nah, ini punya fondasi yang kuat. Cabai, bawang, atau kecap bakal bikin arahnya makin Nusantara."}
+ else if(s.has("Mie")&&s.has("Telur")){title="Mie Telur Lab";emoji="🍜";score+=7;vibe="😋 Aman";comment="Ini sudah masuk zona nyaman. Tambah sawi dan cabai kalau mau naik level."}
+ else if(s.has("Tempe")&&s.has("Santan")){title="Tempe Santan Eksperimen";emoji="🥘";score+=5;vibe="🇮🇩 Nusantara";comment="Kombinasi ini punya jejak rasa Nusantara. Serai, bawang, dan cabai bisa membawa eksperimen lebih jauh."}
+ else if(s.has("Pisang")&&s.has("Cabai")){title="Pisang Cabai: Jangan Panik";emoji="🍌";score=Math.max(38,score-12);vibe="💀 Nekat";comment="AI Chef menghela napas. Bisa jadi menarik, tapi ini benar-benar wilayah eksperimen. 😂"}
+ else if(n===1){title=a[0]+" Solo Test";emoji=ingredients.find(x=>x[1]===a[0])?.[0]||"🍽️";vibe="🧪 Basic";comment="Satu bahan. Satu kesempatan. Kadang eksperimen terbaik memang dimulai dari yang sederhana."}
+ else {comment="Belum ada resep baku untuk kombinasi ini. Justru itu yang bikin sandbox ini seru. Coba masak dan lihat ke mana rasanya pergi."}
+ score=Math.min(99,Math.max(25,score));
+ const time=Math.max(5,4+n*2);
+ return {title,emoji,score,vibe,time,comment};
+}
+function renderResult(r){
+ document.getElementById("panEmoji").textContent=r.emoji;
+ const result=document.getElementById("result");
+ result.innerHTML='<div class="result-title">'+r.emoji+' '+r.title+'</div><div class="meta"><span>🧪 '+r.vibe+'</span><span>⭐ '+r.score+'% test score</span><span>⏱️ '+r.time+' menit</span><span>🥕 '+selected.size+' bahan</span></div><div class="comment">🤖 <b>AI Chef:</b> '+r.comment+'</div>';
+ result.classList.add("show");
+ discoveries.add(r.title); renderDiscoveries();
+}
+function renderDiscoveries(){const d=document.getElementById("discoveries");d.innerHTML=[...discoveries].map(x=>'<span class="chip">🍽️ '+x+'</span>').join("")}
+</script>
+</body>
+</html>
